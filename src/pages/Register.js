@@ -1,31 +1,35 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
-const Login = () => {
+const Register = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:5000/api/auth/login', {
+      const response = await axios.post('http://localhost:5000/api/auth/register', {
         email,
         password,
       });
-      // Store token in localStorage or state for future requests
-      localStorage.setItem('token', response.data.token);
-      history.push('/dashboard'); // Redirect to a dashboard or another page
+      navigate('/login'); // Redirect to login page after registration
     } catch (err) {
-      setError('Invalid credentials or user not found');
+      setError('User already exists or error in registration');
     }
+  };
+
+  const handleGuestLogin = () => {
+    // Allow guest login and store token or guest flag in localStorage
+    localStorage.setItem('guest', 'true'); // Flag to track guest login
+    navigate('/LimitedFeatures');
   };
 
   return (
     <div>
-      <h2>Login</h2>
+      <h2>Register</h2>
       <form onSubmit={handleSubmit}>
         <div>
           <label>Email:</label>
@@ -46,11 +50,11 @@ const Login = () => {
           />
         </div>
         {error && <p>{error}</p>}
-        <button type="submit">Login</button>
+        <button type="submit">Register</button>
       </form>
+      <button onClick={handleGuestLogin}>Continue as Guest</button> {/* Guest login button */}
     </div>
   );
 };
 
-
-export default Login;
+export default Register;
